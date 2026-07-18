@@ -1,14 +1,91 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Roman Coin AI</title>
+<title>Roman Coin AI Identifier</title>
 </head>
 
 <body>
 
-<h1>Roman Coin Identifier</h1>
+<h1>🏛️ Roman Coin AI Identifier</h1>
 
-<p>Upload a photo of your coin and AI will analyze it.</p>
+<p>Upload a clear photo of your Roman coin.</p>
+
+<input type="file" id="imageInput" accept="image/*">
+
+<br><br>
+
+<button onclick="analyzeCoin()">Analyze Coin</button>
+
+<h2>Result:</h2>
+
+<p id="result">Waiting for image...</p>
+
+
+<script>
+
+const workerURL = "https://ancient-coin-ai.xmodanlou.workers.dev/";
+
+async function analyzeCoin(){
+
+const file =
+document.getElementById("imageInput").files[0];
+
+
+if(!file){
+
+document.getElementById("result").innerHTML =
+"Please upload a coin photo first.";
+
+return;
+
+}
+
+
+document.getElementById("result").innerHTML =
+"Analyzing coin...";
+
+
+const reader = new FileReader();
+
+
+reader.onloadend = async function(){
+
+const base64 =
+reader.result.split(",")[1];
+
+
+const response = await fetch(workerURL, {
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+image:base64
+
+})
+
+});
+
+
+const data = await response.json();
+
+
+document.getElementById("result").innerHTML =
+JSON.stringify(data);
+
+};
+
+
+reader.readAsDataURL(file);
+
+
+}
+
+</script>
 
 </body>
 </html>
